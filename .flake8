@@ -1,0 +1,11 @@
+[flake8]
+addopts = --color=yes -ra
+log_cli_format = %(asctime)s - %(name)s - %(levelname)s: %(message)s
+log_cli_date_format = %d %b %Y %H:%M:%S
+max-line-length = 127
+max-complexity = 10
+exclude = 
+    .git,
+    __pycache__,
+    .pytest_cache,
+    venv

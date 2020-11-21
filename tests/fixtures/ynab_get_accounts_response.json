@@ -1,0 +1,33 @@
+{
+    "data": {
+      "accounts": [
+        {
+          "id": "id-one",
+          "name": "Bank Account 1",
+          "type": "checking",
+          "on_budget": true,
+          "closed": true,
+          "note": "string",
+          "balance": 0,
+          "cleared_balance": 0,
+          "uncleared_balance": 0,
+          "transfer_payee_id": "string",
+          "deleted": false
+        },
+        {
+            "id": "id-two",
+            "name": "Monzo",
+            "type": "checking",
+            "on_budget": true,
+            "closed": true,
+            "note": "string",
+            "balance": 0,
+            "cleared_balance": 0,
+            "uncleared_balance": 0,
+            "transfer_payee_id": "string",
+            "deleted": false
+          }
+      ],
+      "server_knowledge": 0
+    }
+  }

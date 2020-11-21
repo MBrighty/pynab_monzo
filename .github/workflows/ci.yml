@@ -1,0 +1,33 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.8.x'
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Secret Scan
+        run: trufflehog --regex .
+      - name: Lint
+        run: |
+          black --check
+          flake8
+      - name: Unit Test
+        run: pytest -m "not integration and not skip"
+      - name: Integration Test
+        if: ${{ github.event_name == 'pull_request' }}
+        env: 
+          MONZO_TOKEN: ${{ secrets.MONZO_TOKEN }}
+          YNAB_PAT: ${{ secrets.YNAB_PAT }}
+          MONZO_ACCOUNT: ${{ secrets.MONZO_ACCOUNT }}
+          MONZO_ACCOUNT_NAME: ${{ secrets.MONZO_ACCOUNT_NAME }}
+        run: pytest -m "integration and not skip"
