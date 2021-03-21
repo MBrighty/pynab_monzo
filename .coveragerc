@@ -1,0 +1,6 @@
+[run]
+omit = tests/**, .venv/**, pynab_monzo/__main__.py
+source = pynab_monzo
+
+[report]
+fail_under=90

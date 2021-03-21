@@ -21,13 +21,14 @@ jobs:
         run: |
           black --check
           flake8
-      - name: Unit Test
+      - name: Unit Tests
+        if: ${{ github.event_name == 'push' }}
         run: pytest -m "not integration and not skip"
-      - name: Integration Test
+      - name: Unit and Integration Tests
         if: ${{ github.event_name == 'pull_request' }}
         env: 
           MONZO_TOKEN: ${{ secrets.MONZO_TOKEN }}
           YNAB_PAT: ${{ secrets.YNAB_PAT }}
           MONZO_ACCOUNT: ${{ secrets.MONZO_ACCOUNT }}
           MONZO_ACCOUNT_NAME: ${{ secrets.MONZO_ACCOUNT_NAME }}
-        run: pytest -m "integration and not skip"
+        run: pytest --cov -m "not skip"
