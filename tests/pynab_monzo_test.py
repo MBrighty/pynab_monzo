@@ -25,6 +25,13 @@ def incoming_json():
 
 
 @fixture
+def incoming_pot_json():
+    with open("tests/fixtures/incoming_pot_transaction.json") as f:
+        transaction_json = json.load(f)
+        yield json.dumps(transaction_json)
+
+
+@fixture
 def accounts_response():
     with open("tests/fixtures/ynab_get_accounts_response.json") as f:
         accounts_response = json.load(f)
@@ -127,6 +134,22 @@ def test_monzo_webhook_handles_duplicate_transactions(
     )
     response = client.post(
         "/monzo-hook", content_type="application/json", data=incoming_json
+    )
+    assert response.status_code == 200
+
+
+@mark.integration
+@httpretty.activate
+def test_monzo_webhook_ignores_pot_transactions(
+    accounts_response, client, redis_stub, incoming_pot_json
+):
+    httpretty.register_uri(
+        httpretty.GET,
+        re.compile("https://api.youneedabudget.com/v1/budgets/last-used/accounts/?"),
+        accounts_response,
+    )
+    response = client.post(
+        "/monzo-hook", content_type="application/json", data=incoming_pot_json
     )
     assert response.status_code == 200
 

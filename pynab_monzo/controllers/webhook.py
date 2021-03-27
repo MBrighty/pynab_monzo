@@ -28,6 +28,10 @@ def translate_monzo_to_ynab(json):
     }
 
 
+def is_pot_transaction(transaction_description: str) -> bool:
+    return transaction_description.startswith("pot_")
+
+
 def is_monzo_transaction_processed(transaction_id: str) -> bool:
     data_store = get_redis()
     return bool(data_store.exists(transaction_id))
@@ -40,11 +44,20 @@ def save_monzo_transaction_id(transaction_id: str) -> bool:
 
 def handle_incoming_transaction(json):
     monzo_transaction_id = json["data"]["id"]
+    monzo_transaction_description = json["data"]["description"]
+
     if is_monzo_transaction_processed(monzo_transaction_id):
         logger.debug(f"Monzo transaction {monzo_transaction_id} is already processed")
         return http.HTTPStatus.OK
+
     save_monzo_transaction_id(monzo_transaction_id)
+
+    if is_pot_transaction(monzo_transaction_description):
+        logger.debug(f"Monzo transaction {monzo_transaction_id} is a pot transaction")
+        return http.HTTPStatus.OK
+
     outgoing_json = translate_monzo_to_ynab(json)
     logger.debug(f"Translated Monzo transaction to: {outgoing_json}")
     client.create_transaction(client._LAST_USED, outgoing_json)
+
     return http.HTTPStatus.CREATED
