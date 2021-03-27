@@ -1,0 +1,19 @@
+{
+    "type": "transaction.created",
+    "data": {
+        "account_id": "acc_00008gju41AHyfLUzBUk8A",
+        "amount": -350,
+        "created": "2015-09-04T14:28:40Z",
+        "currency": "GBP",
+        "description": "pot_00003nLyKuScydycN7PsAl",
+        "id": "tx_00008zjky19HyFLAdlUk7t",
+        "category": "general",
+        "is_load": false,
+        "settled": "2015-09-05T14:28:40Z",
+        "merchant": "None",
+        "metadata": {
+            "pot_deposit_id": "potdep_0000E2FDCazPNo1PALdU4",
+            "pot_id": "pot_00003nLyKuScydycN7PsAl"
+        }
+    }
+}
