@@ -19,7 +19,7 @@ jobs:
         run: trufflehog --regex .
       - name: Lint
         run: |
-          black --check
+          black --check .
           flake8
       - name: Unit Tests
         if: ${{ github.event_name == 'push' }}
