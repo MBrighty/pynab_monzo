@@ -1,5 +1,6 @@
-from flask import Flask, request, abort
+from flask import Flask, request
 from pynab_monzo.controllers import webhook
+from werkzeug.exceptions import UnsupportedMediaType
 import logging
 import sys
 import os
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 def monzo_hook():
     if not request.is_json:
         logger.info(f"Monzo hook called with unsupported mimetype: {request.mimetype}")
-        return abort(415)
+        raise UnsupportedMediaType()
     logger.info(f"Monzo hook called with request body: {request.json}")
     status_code = webhook.handle_incoming_transaction(request.json)
     return ("", status_code)
