@@ -8,7 +8,7 @@ from pynab_monzo.ynab import YnabClient
 @mark.integration
 def test_ynab_client_can_connect():
     testClient = YnabClient()
-    assert testClient.budgets().data is not None
+    assert testClient.budgets()["data"] is not None
 
 
 def test_ynab_client_can_convert_positive_amounts_to_milliunits():
