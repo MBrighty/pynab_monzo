@@ -1,6 +1,6 @@
 import logging
 import os
-import ynab
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -8,30 +8,30 @@ logger = logging.getLogger(__name__)
 class YnabClient(object):
 
     _AUTHORIZATION = "Authorization"
+    _API_BASE = "https://api.youneedabudget.com/v1/"
     _BEARER = "Bearer"
     _LAST_USED = "last-used"
 
     def __init__(self):
         token = os.getenv("YNAB_PAT")
-        self.config = ynab.Configuration(
-            api_key={self._AUTHORIZATION: token},
-            api_key_prefix={self._AUTHORIZATION: self._BEARER},
-        )
-        self.client = ynab.ApiClient(self.config)
         self.monzo_account_name = os.getenv("MONZO_ACCOUNT_NAME")
 
+        self._session = requests.Session()
+        self._session.headers[self._AUTHORIZATION] = f"{self._BEARER} {token}"
+
     def budgets(self):
-        budgets = ynab.BudgetsApi(self.client)
-        json = budgets.get_budgets()
+        budgets = self._session.get(f"{self._API_BASE}budgets")
+        json = budgets.json()
         logger.info(f"Retrieved YNAB budgets: {json}")
         return json
 
     def find_monzo_id(self):
-        accounts = ynab.AccountsApi(self.client)
-        res = accounts.get_accounts(self._LAST_USED)
-        for account in res.data.accounts:
-            if account.name == self.monzo_account_name:
-                monzo_id = account.id
+        res = self._session.get(
+            f"{self._API_BASE}budgets/{self._LAST_USED}/accounts"
+        ).json()
+        for account in res["data"]["accounts"]:
+            if account["name"] == self.monzo_account_name:
+                monzo_id = account["id"]
                 logger.debug(
                     f"Found ID {monzo_id} for Monzo account {self.monzo_account_name}"
                 )
@@ -41,9 +41,10 @@ class YnabClient(object):
         )
         return None
 
-    def create_transaction(self, budget_id, data):
-        transactions = ynab.TransactionsApi(self.client)
-        res = transactions.create_transaction(budget_id, data)
+    def create_transaction(self, data):
+        res = self._session.post(
+            f"{self._API_BASE}budgets/{self._LAST_USED}/transactions", json=data
+        )
         logger.info(f"Created YNAB transaction {res}")
         return res
 

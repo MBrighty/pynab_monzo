@@ -58,6 +58,6 @@ def handle_incoming_transaction(json):
 
     outgoing_json = translate_monzo_to_ynab(json)
     logger.debug(f"Translated Monzo transaction to: {outgoing_json}")
-    client.create_transaction(client._LAST_USED, outgoing_json)
+    client.create_transaction(outgoing_json)
 
     return http.HTTPStatus.CREATED
