@@ -35,7 +35,7 @@ def test_unprocessed_transactions_return_false(cleanup_redis_stub):
 def test_transaction_ids_can_be_saved_to_redis(cleanup_redis_stub):
     class RedisStub(object):
         def set(self, key, value, ex) -> bool:
-            return key == "monzo_transaction_id" and value == "" and ex == 300
+            return key == "monzo_transaction_id" and value == "" and ex == 86400
 
     # Make this a more realistic ID
     set_redis(RedisStub())

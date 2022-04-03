@@ -2,6 +2,7 @@ from pynab_monzo.ynab import YnabClient
 from pynab_monzo.redis import get_redis
 import logging
 import http
+import os
 
 client = YnabClient()
 logger = logging.getLogger(__name__)
@@ -39,7 +40,7 @@ def is_monzo_transaction_processed(transaction_id: str) -> bool:
 
 def save_monzo_transaction_id(transaction_id: str) -> bool:
     data_store = get_redis()
-    return data_store.set(transaction_id, "", ex=300)
+    return data_store.set(transaction_id, "", ex=int(os.getenv("REDIS_TTL", 86400)))
 
 
 def handle_incoming_transaction(json):
